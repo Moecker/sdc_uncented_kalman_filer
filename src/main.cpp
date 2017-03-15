@@ -10,9 +10,10 @@
 #include "ukf.h"
 
 using namespace std;
+using std::vector;
+
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
-using std::vector;
 
 void check_arguments(int argc, char* argv[])
 {
@@ -61,8 +62,31 @@ void check_files(ifstream& in_file, string& in_name, ofstream& out_file, string&
     }
 }
 
+void CallQuizMethods()
+{
+    UKF ukf;
+
+    MatrixXd Xsig = MatrixXd(11, 5);
+    MatrixXd Xsig_aug = MatrixXd(15, 7);
+    MatrixXd Xsig_pred = MatrixXd(15, 5);
+    VectorXd x_pred = VectorXd(5);
+    MatrixXd P_pred = MatrixXd(5, 5);
+    VectorXd z_out = VectorXd(3);
+    MatrixXd S_out = MatrixXd(3, 3);
+    VectorXd x_out = VectorXd(5);
+    MatrixXd P_out = MatrixXd(5, 5);
+
+    ukf.GenerateSigmaPoints(&Xsig);
+    ukf.AugmentedSigmaPoints(&Xsig_aug);
+    ukf.SigmaPointPrediction(&Xsig_pred);
+    ukf.PredictMeanAndCovariance(&x_pred, &P_pred);
+    ukf.PredictRadarMeasurement(&z_out, &S_out);
+    ukf.UpdateState(&x_out, &P_out);
+}
+
 int main(int argc, char* argv[])
 {
+    CallQuizMethods();
 
     check_arguments(argc, argv);
 
