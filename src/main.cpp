@@ -9,8 +9,8 @@
 #include "main_utils.h"
 #include "tools.h"
 
-#include "measurement_package.h"
 #include "ground_truth_package.h"
+#include "measurement_package.h"
 #include "udacity.h"
 #include "ukf.h"
 
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 
     // prep the measurement packages (each line represents a measurement at a
     // timestamp)
-    auto kMax = 10;
+    int kMax = std::numeric_limits<int>::max();
     auto counter = 0;
 
     while (getline(in_file_, line))

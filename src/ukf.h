@@ -11,6 +11,8 @@ using Eigen::VectorXd;
 class UKF
 {
   public:
+    /// Shall make debug outputs
+    bool debug;
     ///* State dimension
     int n_x_;
     ///* Augmented state dimension
@@ -98,7 +100,9 @@ class UKF
     void PredictLaserMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
     void PredictRadarMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
 
-    void SetupWeights();
-
     void UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, const MatrixXd& Zsig, const VectorXd& z);
+
+  private:
+    void NormAngle(double& angle);
+    void SetupWeights();
 };
