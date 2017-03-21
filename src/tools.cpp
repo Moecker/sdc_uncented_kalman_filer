@@ -4,8 +4,8 @@
 
 VectorXd Tools::CalculateRMSE(const std::vector<VectorXd>& estimations, const std::vector<VectorXd>& ground_truth)
 {
-    VectorXd rmse(2);
-    rmse << 0, 0;
+    VectorXd rmse(4);
+    rmse << 0, 0, 0, 0;
 
     // Check the validity of the following inputs:
     //  * the estimation vector size should not be zero
@@ -19,10 +19,23 @@ VectorXd Tools::CalculateRMSE(const std::vector<VectorXd>& estimations, const st
     // Accumulate squared residuals
     for (unsigned int i = 0; i < estimations.size(); ++i)
     {
-        VectorXd pos = ground_truth[i].head(2);
-        VectorXd est = estimations[i].head(2);
+        // Get current items
+        auto estimation = estimations[i];
+        auto truth = ground_truth[i];
 
-        VectorXd residual = est - pos;
+        // Get the estimated position directly from the state vector
+        VectorXd estimated_position = estimation.head(2);
+
+        // The velocity cannot be taken directly from the state vector but must be derived via psi and v
+        auto v = estimation(2);
+        auto psi = estimation(3);
+        auto v_x = cos(psi) * v;
+        auto v_y = sin(psi) * v;
+
+        VectorXd actual = VectorXd(4);
+        actual << estimated_position, v_x, v_y;
+
+        VectorXd residual = actual - truth;
 
         // Coefficient-wise multiplication
         residual = residual.array() * residual.array();

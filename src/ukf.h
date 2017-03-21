@@ -62,10 +62,6 @@ class UKF
 
     UKF();
 
-    void InitializeProcessNoise();
-    void InitialzeMeasurementNoise();
-    void InitializeCovariance();
-
     /**
      * ProcessMeasurement
      * @param meas_package The latest measurement data of either radar or laser
@@ -91,18 +87,32 @@ class UKF
      */
     void UpdateRadar(MeasurementPackage meas_package);
 
+    /// @brief Initializes the Kalman filter with a first given measurement
     void InitializeWithFirstMasurement(const MeasurementPackage& meas_package);
 
+    /// @brief Generates a set of sigma points for an augmented state.
     void GenerateAugmentedSigmaPoints(MatrixXd& Xsig_out);
+
+    /// @brief Sigma points gets predicted to a new state.
     void PredictSigmaPoints(const MatrixXd& Xsig_aug, double delta_t);
+
+    /// @brief Based on the predicted sigma points the mean and covariance is predicted.
     void PredictMeanAndCovariance();
 
+    /// @brief A Laser measurement is predicted to a new state
     void PredictLaserMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
+
+    /// @brief A Radar measurement is predicted to a new state
     void PredictRadarMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
 
+    /// @brief The state is updated using the predicted measurements
     void UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, const MatrixXd& Zsig, const VectorXd& z);
 
   private:
+    void InitializeProcessNoise();
+    void InitialzeMeasurementNoise();
+    void InitializeCovariance();
+
     void NormAngle(double& angle);
     void SetupWeights();
 };

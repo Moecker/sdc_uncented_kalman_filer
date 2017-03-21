@@ -26,15 +26,15 @@ void UKF::InitializeProcessNoise()
     // Process noise standard deviation longitudinal acceleration in m/s^2
     std_a_ = 0.2;
     // Process noise standard deviation yaw acceleration in rad/s^2
-    std_yawdd_ = 0.2;
+    std_yawdd_ = 0.4;
 }
 
 void UKF::InitialzeMeasurementNoise()
 {
     // Laser measurement noise standard deviation position1 in m
-    std_laspx_ = 0.15;
+    std_laspx_ = 0.10;
     // Laser measurement noise standard deviation position2 in m
-    std_laspy_ = 0.15;
+    std_laspy_ = 0.10;
 
     // Radar measurement noise standard deviation radius in m
     std_radr_ = 0.3;
@@ -49,9 +49,9 @@ void UKF::InitializeCovariance()
     const double kUncertain = 1000;
     const double kPx = 1.0;
     const double kPy = 1.0;
-    const double kV = 10.0;
-    const double kPsi = 5.0;
-    const double kPsiDot = 2.0;
+    const double kV = kUncertain;
+    const double kPsi = kUncertain;
+    const double kPsiDot = 100.0;
 
     // clang-format off
     P_ << kPx, 0, 0, 0, 0,

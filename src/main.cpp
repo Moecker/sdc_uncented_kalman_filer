@@ -111,7 +111,8 @@ int main(int argc, char* argv[])
     }
 
     // Compute the accuracy (RMSE)
-    std::cout << "Accuracy - RMSE: \n" << Tools::CalculateRMSE(estimations, ground_truth) << std::endl;
+    auto rmse = Tools::CalculateRMSE(estimations, ground_truth);
+    std::cout << "Accuracy - RMSE: \n" << rmse << std::endl;
 
     // Close files
     if (out_file_.is_open())
