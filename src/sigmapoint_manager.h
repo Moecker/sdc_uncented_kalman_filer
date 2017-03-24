@@ -1,10 +1,7 @@
 #pragma once
 
 #include <vector>
-
 #include "Eigen/Dense"
-
-#include "measurement_package.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -26,9 +23,6 @@ class SigmapointManager
   private:
     /// @brief Reference to the Kalman filter
     UnscentedKalmanFilter& ukf_;
-
-    /// @brief Sigma point spreading parameter
-    double lambda_;
 
     /// @brief Shall make debug outputs
     bool debug_;

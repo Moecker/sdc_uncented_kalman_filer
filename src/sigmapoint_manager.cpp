@@ -3,8 +3,7 @@
 #include "sigmapoint_manager.h"
 #include "unscented_kalman_filter.h"
 
-SigmapointManager::SigmapointManager(UnscentedKalmanFilter& ukf)
-        : ukf_(ukf), debug_(false), lambda_(3 - ukf.GetAugmentedStateSize())
+SigmapointManager::SigmapointManager(UnscentedKalmanFilter& ukf) : ukf_(ukf), debug_(false)
 {
 }
 
@@ -35,8 +34,8 @@ void SigmapointManager::GenerateAugmentedSigmaPoints(MatrixXd& Xsig_aug)
     auto augmented_state_size = ukf_.GetAugmentedStateSize();
     for (int i = 0; i < augmented_state_size; i++)
     {
-        Xsig_aug.col(i + 1) = x_aug + sqrt(lambda_ + augmented_state_size) * L.col(i);
-        Xsig_aug.col(i + 1 + augmented_state_size) = x_aug - sqrt(lambda_ + augmented_state_size) * L.col(i);
+        Xsig_aug.col(i + 1) = x_aug + sqrt(ukf_.GetLambda() + augmented_state_size) * L.col(i);
+        Xsig_aug.col(i + 1 + augmented_state_size) = x_aug - sqrt(ukf_.GetLambda() + augmented_state_size) * L.col(i);
     }
 
     // print result

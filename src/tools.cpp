@@ -50,3 +50,8 @@ VectorXd Tools::CalculateRMSE(const std::vector<VectorXd>& estimations, const st
 
     return rmse;
 }
+
+void Tools::NormAngle(double& angle)
+{
+    angle = angle - (ceil((angle + M_PI) / (2 * M_PI)) - 1) * 2 * M_PI;  // (-Pi;Pi]:
+}

@@ -5,7 +5,10 @@
 #include "Eigen/Dense"
 
 #include "measurement_package.h"
+
 #include "sigmapoint_manager.h"
+#include "laser_manager.h"
+#include "radar_manager.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -14,7 +17,7 @@ class UnscentedKalmanFilter
 {
   public:
     /// Shall make debug outputs
-    bool debug;
+    bool debug_;
     ///* State dimension
     int n_x_;
     ///* Augmented state dimension
@@ -46,17 +49,6 @@ class UnscentedKalmanFilter
     ///* Process noise standard deviation yaw acceleration in rad/s^2
     double std_yawdd_;
 
-    ///* Laser measurement noise standard deviation position1 in m
-    double std_laspx_;
-    ///* Laser measurement noise standard deviation position2 in m
-    double std_laspy_;
-    ///* Radar measurement noise standard deviation radius in m
-    double std_radr_;
-    ///* Radar measurement noise standard deviation angle in rad
-    double std_radphi_;
-    ///* Radar measurement noise standard deviation radius change in m/s
-    double std_radrd_;
-
     ///* the current NIS for radar
     double NIS_radar_;
     ///* the current NIS for laser
@@ -72,35 +64,11 @@ class UnscentedKalmanFilter
     /// @param delta_t Time between k and k+1 in s
     void PredictionStep(double delta_t);
 
-    /**
-     * Updates the state and the state covariance matrix using a laser measurement
-     * @param meas_package The measurement at k+1
-     */
-    void UpdateLidar(MeasurementPackage meas_package);
-
-    /**
-     * Updates the state and the state covariance matrix using a radar measurement
-     * @param meas_package The measurement at k+1
-     */
-    void UpdateRadar(MeasurementPackage meas_package);
-
     /// @brief Initializes the Kalman filter with a first given measurement
     void InitializeWithFirstMasurement(const MeasurementPackage& meas_package);
 
-    /// @brief Generates a set of sigma points for an augmented state.
-    void GenerateAugmentedSigmaPoints(MatrixXd& Xsig_out);
-
-    /// @brief Sigma points gets predicted to a new state.
-    void PredictSigmaPoints(const MatrixXd& Xsig_aug, double delta_t);
-
     /// @brief Based on the predicted sigma points the mean and covariance is predicted.
     void PredictMeanAndCovariance();
-
-    /// @brief A Laser measurement is predicted to a new state
-    void PredictLaserMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
-
-    /// @brief A Radar measurement is predicted to a new state
-    void PredictRadarMeasurement(const int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig);
 
     /// @brief The state is updated using the predicted measurements
     void UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, const MatrixXd& Zsig, const VectorXd& z);
@@ -111,18 +79,20 @@ class UnscentedKalmanFilter
     double GetStdDevAcceleration() { return std_a_; }
     double GetStdDevYawAcceleration() { return std_yawdd_; }
 
+    double GetLambda() { return lambda_; }
+
     int GetStateSize() { return n_x_; }
     int GetAugmentedStateSize() { return n_aug_; }
+    VectorXd GetWeights() { return weights_; }
 
     MatrixXd& GetPredictedSigmaPoints() { return Xsig_pred_; }
 
   private:
     SigmapointManager sigma_manager_;
+    LaserManager laser_manager_;
+    RadarManager radar_manager_;
 
     void InitializeProcessNoise();
-    void InitialzeMeasurementNoise();
     void InitializeCovariance();
-
-    void NormAngle(double& angle);
     void SetupWeights();
 };

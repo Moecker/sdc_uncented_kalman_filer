@@ -12,4 +12,6 @@ class Tools
   public:
     /// @brief A helper method to calculate RMSE.
     static VectorXd CalculateRMSE(const std::vector<VectorXd>& estimations, const std::vector<VectorXd>& ground_truth);
+
+    static void NormAngle(double& angle);
 };
