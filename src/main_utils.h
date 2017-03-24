@@ -7,7 +7,7 @@
 
 #include "Eigen/Dense"
 
-#include "ukf.h"
+#include "unscented_kalman_filter.h"
 #include "ground_truth_package.h"
 #include "measurement_package.h"
 
@@ -25,7 +25,7 @@ void ReadRadarMeasurement(MeasurementPackage& meas_package,
 void ReadGroundTruth(istringstream& iss, GroundTruthPackage& gt_package, vector<GroundTruthPackage>& gt_pack_list);
 
 void OutputEstimations(ofstream& out_file_,
-                       UKF& ufk,
+                       UnscentedKalmanFilter& ufk,
                        vector<MeasurementPackage>& measurement_pack_list,
                        size_t k,
                        vector<GroundTruthPackage>& gt_pack_list);

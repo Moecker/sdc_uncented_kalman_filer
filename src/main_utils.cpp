@@ -68,7 +68,7 @@ void ReadGroundTruth(istringstream& iss, GroundTruthPackage& gt_package, vector<
 }
 
 void OutputEstimations(ofstream& out_file_,
-                       UKF& ukf,
+                       UnscentedKalmanFilter& ukf,
                        vector<MeasurementPackage>& measurement_pack_list,
                        size_t k,
                        vector<GroundTruthPackage>& gt_pack_list)

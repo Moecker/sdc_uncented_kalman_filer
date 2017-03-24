@@ -3,12 +3,14 @@
 #include <vector>
 
 #include "Eigen/Dense"
+
 #include "measurement_package.h"
+#include "sigmapoint_manager.h"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-class UKF
+class UnscentedKalmanFilter
 {
   public:
     /// Shall make debug outputs
@@ -60,20 +62,15 @@ class UKF
     ///* the current NIS for laser
     double NIS_laser_;
 
-    UKF();
+    UnscentedKalmanFilter();
 
-    /**
-     * ProcessMeasurement
-     * @param meas_package The latest measurement data of either radar or laser
-     */
+    /// @brief Processes a measurement package
+    /// @param meas_package The latest measurement data of either radar or laser
     void ProcessMeasurement(MeasurementPackage meas_package);
 
-    /**
-     * Prediction Predicts sigma points, the state, and the state covariance
-     * matrix
-     * @param delta_t Time between k and k+1 in s
-     */
-    void Prediction(double delta_t);
+    /// @brief PredictionStep Predicts sigma points, the state, and the state covariance matrix
+    /// @param delta_t Time between k and k+1 in s
+    void PredictionStep(double delta_t);
 
     /**
      * Updates the state and the state covariance matrix using a laser measurement
@@ -108,7 +105,20 @@ class UKF
     /// @brief The state is updated using the predicted measurements
     void UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, const MatrixXd& Zsig, const VectorXd& z);
 
+    VectorXd& GetState() { return x_; }
+    MatrixXd& GetCovariance() { return P_; }
+
+    double GetStdDevAcceleration() { return std_a_; }
+    double GetStdDevYawAcceleration() { return std_yawdd_; }
+
+    int GetStateSize() { return n_x_; }
+    int GetAugmentedStateSize() { return n_aug_; }
+
+    MatrixXd& GetPredictedSigmaPoints() { return Xsig_pred_; }
+
   private:
+    SigmapointManager sigma_manager_;
+
     void InitializeProcessNoise();
     void InitialzeMeasurementNoise();
     void InitializeCovariance();

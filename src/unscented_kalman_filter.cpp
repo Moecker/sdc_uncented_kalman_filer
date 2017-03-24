@@ -1,9 +1,10 @@
 #include <iostream>
 
-#include "ukf.h"
+#include "unscented_kalman_filter.h"
 
-UKF::UKF()
-        : debug(false),
+UnscentedKalmanFilter::UnscentedKalmanFilter()
+        : sigma_manager_(*this),
+          debug(false),
           n_x_(5),
           n_aug_(7),
           lambda_(3 - n_aug_),
@@ -21,7 +22,7 @@ UKF::UKF()
     InitializeCovariance();
 }
 
-void UKF::InitializeProcessNoise()
+void UnscentedKalmanFilter::InitializeProcessNoise()
 {
     // Process noise standard deviation longitudinal acceleration in m/s^2
     std_a_ = 0.2;
@@ -29,7 +30,7 @@ void UKF::InitializeProcessNoise()
     std_yawdd_ = 0.4;
 }
 
-void UKF::InitialzeMeasurementNoise()
+void UnscentedKalmanFilter::InitialzeMeasurementNoise()
 {
     // Laser measurement noise standard deviation position1 in m
     std_laspx_ = 0.10;
@@ -44,7 +45,7 @@ void UKF::InitialzeMeasurementNoise()
     std_radrd_ = 0.1;
 }
 
-void UKF::InitializeCovariance()
+void UnscentedKalmanFilter::InitializeCovariance()
 {
     const double kUncertain = 1000;
     const double kPx = 1.0;
@@ -66,7 +67,7 @@ void UKF::InitializeCovariance()
  * @param {MeasurementPackage} meas_package The latest measurement data of
  * either radar or laser.
  */
-void UKF::ProcessMeasurement(MeasurementPackage meas_package)
+void UnscentedKalmanFilter::ProcessMeasurement(MeasurementPackage meas_package)
 {
     // Initialization
     if (!is_initialized_)
@@ -84,7 +85,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package)
     time_us_ = meas_package.timestamp_;
 
     // Prediction for elapsed time duration
-    Prediction(delta_time);
+    PredictionStep(delta_time);
 
     // Update
     if (use_laser_ && meas_package.sensor_type_ == MeasurementPackage::LASER)
@@ -108,7 +109,7 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package)
  * @param {double} delta_t the change in time (in seconds) between the last
  * measurement and this one.
  */
-void UKF::Prediction(double delta_t)
+void UnscentedKalmanFilter::PredictionStep(double delta_t)
 {
     /**
     TODO:
@@ -122,6 +123,10 @@ void UKF::Prediction(double delta_t)
     // Call prediction chain
     GenerateAugmentedSigmaPoints(Xsig_aug);
     PredictSigmaPoints(Xsig_aug, delta_t);
+
+    //sigma_manager_.GenerateAugmentedSigmaPoints(Xsig_aug);
+    //sigma_manager_.PredictSigmaPoints(Xsig_aug, delta_t);
+
     PredictMeanAndCovariance();
 }
 
@@ -129,7 +134,7 @@ void UKF::Prediction(double delta_t)
  * Updates the state and the state covariance matrix using a laser measurement.
  * @param {MeasurementPackage} meas_package
  */
-void UKF::UpdateLidar(MeasurementPackage meas_package)
+void UnscentedKalmanFilter::UpdateLidar(MeasurementPackage meas_package)
 {
     /**
     TODO:
@@ -152,7 +157,7 @@ void UKF::UpdateLidar(MeasurementPackage meas_package)
  * Updates the state and the state covariance matrix using a radar measurement.
  * @param {MeasurementPackage} meas_package
  */
-void UKF::UpdateRadar(MeasurementPackage meas_package)
+void UnscentedKalmanFilter::UpdateRadar(MeasurementPackage meas_package)
 {
     /**
     TODO:
@@ -171,7 +176,7 @@ void UKF::UpdateRadar(MeasurementPackage meas_package)
     UpdateState(n_z, z_pred, S, Zsig, meas_package.raw_measurements_);
 }
 
-void UKF::InitializeWithFirstMasurement(const MeasurementPackage& meas_package)
+void UnscentedKalmanFilter::InitializeWithFirstMasurement(const MeasurementPackage& meas_package)
 {
     if (meas_package.sensor_type_ == MeasurementPackage::RADAR)
     {
@@ -188,13 +193,13 @@ void UKF::InitializeWithFirstMasurement(const MeasurementPackage& meas_package)
     }
     // UPdate timestamp with current measurement timestamp
     time_us_ = meas_package.timestamp_;
-    std::cout << "UKF is initialized to: \n" << x_ << std::endl;
+    std::cout << "UnscentedKalmanFilter is initialized to: \n" << x_ << std::endl;
 
     // Done initializing, no need to predict or update
     is_initialized_ = true;
 }
 
-void UKF::GenerateAugmentedSigmaPoints(MatrixXd& Xsig_aug)
+void UnscentedKalmanFilter::GenerateAugmentedSigmaPoints(MatrixXd& Xsig_aug)
 {
     // create augmented mean vector
     VectorXd x_aug = VectorXd(7);
@@ -229,7 +234,7 @@ void UKF::GenerateAugmentedSigmaPoints(MatrixXd& Xsig_aug)
         std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
 }
 
-void UKF::PredictSigmaPoints(const MatrixXd& Xsig_aug, double delta_t)
+void UnscentedKalmanFilter::PredictSigmaPoints(const MatrixXd& Xsig_aug, double delta_t)
 {
     // predict sigma points
     for (int i = 0; i < 2 * n_aug_ + 1; i++)
@@ -283,7 +288,7 @@ void UKF::PredictSigmaPoints(const MatrixXd& Xsig_aug, double delta_t)
         std::cout << "Xsig_pred = " << std::endl << Xsig_pred_ << std::endl;
 }
 
-void UKF::PredictMeanAndCovariance()
+void UnscentedKalmanFilter::PredictMeanAndCovariance()
 {
     SetupWeights();
 
@@ -317,7 +322,7 @@ void UKF::PredictMeanAndCovariance()
     }
 }
 
-void UKF::PredictLaserMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig)
+void UnscentedKalmanFilter::PredictLaserMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig)
 {
     SetupWeights();
 
@@ -366,7 +371,7 @@ void UKF::PredictLaserMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, Matrix
     }
 }
 
-void UKF::PredictRadarMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig)
+void UnscentedKalmanFilter::PredictRadarMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, MatrixXd& Zsig)
 {
     SetupWeights();
 
@@ -421,7 +426,11 @@ void UKF::PredictRadarMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, Matrix
     }
 }
 
-void UKF::UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, const MatrixXd& Zsig, const VectorXd& z)
+void UnscentedKalmanFilter::UpdateState(const int n_z,
+                                        const VectorXd& z_pred,
+                                        const MatrixXd& S,
+                                        const MatrixXd& Zsig,
+                                        const VectorXd& z)
 {
     SetupWeights();
 
@@ -464,12 +473,12 @@ void UKF::UpdateState(const int n_z, const VectorXd& z_pred, const MatrixXd& S, 
     }
 }
 
-void UKF::NormAngle(double& angle)
+void UnscentedKalmanFilter::NormAngle(double& angle)
 {
     angle = angle - (ceil((angle + M_PI) / (2 * M_PI)) - 1) * 2 * M_PI;  // (-Pi;Pi]:
 }
 
-void UKF::SetupWeights()
+void UnscentedKalmanFilter::SetupWeights()
 {
     double weight_0 = lambda_ / (lambda_ + n_aug_);
     weights_(0) = weight_0;

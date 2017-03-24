@@ -12,7 +12,7 @@
 #include "ground_truth_package.h"
 #include "measurement_package.h"
 #include "udacity.h"
-#include "ukf.h"
+#include "unscented_kalman_filter.h"
 
 using namespace std;
 using std::vector;
@@ -87,14 +87,14 @@ int main(int argc, char* argv[])
         ReadGroundTruth(iss, gt_package, gt_pack_list);
     }
 
-    // Create a UKF instance
-    UKF ukf;
+    // Create a UnscentedKalmanFilter instance
+    UnscentedKalmanFilter ukf;
 
     // Used to compute the RMSE later
     vector<VectorXd> estimations;
     vector<VectorXd> ground_truth;
 
-    // Call the UKF-based fusion
+    // Call the UnscentedKalmanFilter-based fusion
     size_t N = measurement_pack_list.size();
     for (size_t k = 0; k < N; ++k)
     {
@@ -203,8 +203,8 @@ int main2(int argc, char* argv[])
         }
     }
 
-    // Create a UKF instance
-    UKF ukf;
+    // Create a UnscentedKalmanFilter instance
+    UnscentedKalmanFilter ukf;
 
     size_t number_of_measurements = measurement_pack_list.size();
 
@@ -212,7 +212,7 @@ int main2(int argc, char* argv[])
     // frame)
     for (size_t k = 0; k < number_of_measurements; ++k)
     {
-        // Call the UKF-based fusion
+        // Call the UnscentedKalmanFilter-based fusion
         ukf.ProcessMeasurement(measurement_pack_list[k]);
 
         // output the estimation
