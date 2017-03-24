@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
         OutputEstimations(out_file_, ukf, measurement_pack_list, k, gt_pack_list);
 
         // Store ground truth and current Kalman state
-        estimations.push_back(ukf.x_);
+        estimations.push_back(ukf.GetState());
         ground_truth.push_back(gt_pack_list[k].gt_values_);
     }
 
@@ -216,11 +216,12 @@ int main2(int argc, char* argv[])
         ukf.ProcessMeasurement(measurement_pack_list[k]);
 
         // output the estimation
-        out_file_ << ukf.x_(0) << "\t";  // pos1 - est
-        out_file_ << ukf.x_(1) << "\t";  // pos2 - est
-        out_file_ << ukf.x_(2) << "\t";  // vel_abs -est
-        out_file_ << ukf.x_(3) << "\t";  // yaw_angle -est
-        out_file_ << ukf.x_(4) << "\t";  // yaw_rate -est
+        const auto& state = ukf.GetState();
+        out_file_ << state(0) << "\t";  // pos1 - est
+        out_file_ << state(1) << "\t";  // pos2 - est
+        out_file_ << state(2) << "\t";  // vel_abs -est
+        out_file_ << state(3) << "\t";  // yaw_angle -est
+        out_file_ << state(4) << "\t";  // yaw_rate -est
 
         // output the measurements
         if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::LASER)
@@ -235,7 +236,7 @@ int main2(int argc, char* argv[])
         }
         else if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::RADAR)
         {
-            // output the estimation in the cartesian coordinates
+            // output the estimation in the Cartesian coordinates
             double ro = measurement_pack_list[k].raw_measurements_(0);
             double phi = measurement_pack_list[k].raw_measurements_(1);
             out_file_ << ro * cos(phi) << "\t";  // p1_meas

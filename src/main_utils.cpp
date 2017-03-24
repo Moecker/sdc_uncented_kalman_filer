@@ -74,10 +74,11 @@ void OutputEstimations(ofstream& out_file_,
                        vector<GroundTruthPackage>& gt_pack_list)
 {
     // Output the estimation
-    out_file_ << ukf.x_(0) << "\t";
-    out_file_ << ukf.x_(1) << "\t";
-    out_file_ << ukf.x_(2) << "\t";
-    out_file_ << ukf.x_(3) << "\t";
+    const auto& state = ukf.GetState();
+    out_file_ << state(0) << "\t";
+    out_file_ << state(1) << "\t";
+    out_file_ << state(2) << "\t";
+    out_file_ << state(3) << "\t";
 
     // Output the measurements
     if (measurement_pack_list[k].sensor_type_ == MeasurementPackage::LASER)
