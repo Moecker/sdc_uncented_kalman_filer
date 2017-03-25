@@ -8,7 +8,7 @@ class RadarManager : public ISensorMeasurement
 {
   public:
     /// @brief Construct with given ukf reference
-    RadarManager(UnscentedKalmanFilter& ukf);
+    RadarManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs_);
 
     /// @copydoc ISensorMeasurement::Update
     void Update(MeasurementPackage meas_package);
@@ -28,5 +28,5 @@ class RadarManager : public ISensorMeasurement
     double std_radrd_;
 
     /// @brief Shall make debug outputs
-    bool debug_;
+    bool use_debug_outputs_;
 };

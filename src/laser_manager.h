@@ -8,7 +8,7 @@ class LaserManager : public ISensorMeasurement
 {
   public:
     /// @brief Construct with given ukf reference
-    LaserManager(UnscentedKalmanFilter& ukf);
+    LaserManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs_);
 
     /// @copydoc ISensorMeasurement::Update
     void Update(MeasurementPackage meas_package);
@@ -26,5 +26,5 @@ class LaserManager : public ISensorMeasurement
     double std_laspy_;
 
     /// @brief Shall make debug outputs
-    bool debug_;
+    bool use_debug_outputs_;
 };

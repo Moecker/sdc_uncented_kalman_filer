@@ -12,7 +12,7 @@ class SigmapointManager
 {
   public:
     /// @brief Construct with given ukf reference
-    SigmapointManager(UnscentedKalmanFilter& ukf);
+    SigmapointManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs);
 
     /// @brief Generates a set of sigma points for an augmented state.
     void GenerateAugmentedSigmaPoints(MatrixXd& Xsig_out);
@@ -25,5 +25,5 @@ class SigmapointManager
     UnscentedKalmanFilter& ukf_;
 
     /// @brief Shall make debug outputs
-    bool debug_;
+    bool use_debug_outputs_;
 };

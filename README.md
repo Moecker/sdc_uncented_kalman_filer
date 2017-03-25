@@ -19,6 +19,9 @@ Use the configure.bat to configure two project:
 Call run_vs or run_make for either compiler.
 Or simply use the command suggested in "Basic Build Instructions"
 
+The run_vs is by default using the first set of example measurments.
+The run_make is by default using the second set of example measurements.
+
 ## Dependencies
 
 * cmake >= v3.5

@@ -4,10 +4,12 @@
 #include "unscented_kalman_filter.h"
 
 UnscentedKalmanFilter::UnscentedKalmanFilter()
-        : sigma_manager_(*this),
-          laser_manager_(*this),
-          radar_manager_(*this),
-          debug_(false),
+        : use_debug_outputs_(false),
+          use_laser_(true),
+          use_radar_(true),
+          sigma_manager_(*this, use_debug_outputs_),
+          laser_manager_(*this, use_debug_outputs_),
+          radar_manager_(*this, use_debug_outputs_),
           n_x_(5),
           n_aug_(7),
           lambda_(3 - n_aug_),
@@ -16,9 +18,7 @@ UnscentedKalmanFilter::UnscentedKalmanFilter()
           Xsig_pred_(MatrixXd(n_x_, 2 * n_aug_ + 1)),
           weights_(VectorXd(2 * n_aug_ + 1)),
           time_us_(0),
-          is_initialized_(false),
-          use_laser_(true),
-          use_radar_(true)
+          is_initialized_(false)
 {
     InitializeProcessNoise();
     InitializeCovariance();
@@ -62,8 +62,10 @@ void UnscentedKalmanFilter::ProcessMeasurement(MeasurementPackage meas_package)
 
     // Compute the time elapsed between the current and previous measurements
     double delta_time = (meas_package.timestamp_ - time_us_) / 1000000.0;
-    if (debug_)
+    if (use_debug_outputs_)
+    {
         std::cout << "Elapsed delta time: " << delta_time << "s" << std::endl;
+    }
 
     // Update state time to measurement time
     time_us_ = meas_package.timestamp_;
@@ -82,10 +84,11 @@ void UnscentedKalmanFilter::ProcessMeasurement(MeasurementPackage meas_package)
     }
 
     // Print the current state and covariance
-    if (debug_)
+    if (use_debug_outputs_)
+    {
         std::cout << "New Mean x_: \n" << x_ << std::endl;
-    if (debug_)
         std::cout << "New Covariance P_: \n" << P_ << std::endl;
+    }
 }
 
 void UnscentedKalmanFilter::PredictionStep(double delta_t)
@@ -150,7 +153,7 @@ void UnscentedKalmanFilter::PredictMeanAndCovariance()
     }
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "Predicted state" << std::endl;
         std::cout << x_ << std::endl;
@@ -197,7 +200,7 @@ void UnscentedKalmanFilter::UpdateState(const int n_z,
     P_ = P_ - K * S * K.transpose();
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "Updated state x: " << std::endl << x_ << std::endl;
         std::cout << "Updated state covariance P: " << std::endl << P_ << std::endl;

@@ -3,7 +3,8 @@
 #include "sigmapoint_manager.h"
 #include "unscented_kalman_filter.h"
 
-SigmapointManager::SigmapointManager(UnscentedKalmanFilter& ukf) : ukf_(ukf), debug_(false)
+SigmapointManager::SigmapointManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs)
+        : ukf_(ukf), use_debug_outputs_(use_debug_outputs)
 {
 }
 
@@ -39,7 +40,7 @@ void SigmapointManager::GenerateAugmentedSigmaPoints(MatrixXd& Xsig_aug)
     }
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "Xsig_aug = " << std::endl << Xsig_aug << std::endl;
     }
@@ -97,7 +98,7 @@ void SigmapointManager::PredictSigmaPoints(const MatrixXd& Xsig_aug, double delt
     }
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "Xsig_pred = " << std::endl << Xsig_pred << std::endl;
     }

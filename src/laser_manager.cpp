@@ -4,7 +4,8 @@
 #include "tools.h"
 #include "unscented_kalman_filter.h"
 
-LaserManager::LaserManager(UnscentedKalmanFilter& ukf) : ukf_(ukf), debug_(false)
+LaserManager::LaserManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs_)
+        : ukf_(ukf), use_debug_outputs_(use_debug_outputs_)
 {
     // Laser measurement noise standard deviation position1 in m
     std_laspx_ = 0.10;
@@ -71,7 +72,7 @@ void LaserManager::PredictMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, Ma
     S = S + R;
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "z_pred: " << std::endl << z_pred << std::endl;
         std::cout << "S: " << std::endl << S << std::endl;

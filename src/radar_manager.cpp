@@ -5,7 +5,8 @@
 
 #include "tools.h"
 
-RadarManager::RadarManager(UnscentedKalmanFilter& ukf) : ukf_(ukf), debug_(false)
+RadarManager::RadarManager(UnscentedKalmanFilter& ukf, bool use_debug_outputs_)
+        : ukf_(ukf), use_debug_outputs_(use_debug_outputs_)
 {
     // Radar measurement noise standard deviation radius in m
     std_radr_ = 0.3;
@@ -40,7 +41,7 @@ void RadarManager::PredictMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, Ma
     for (int i = 0; i < 2 * augement_state_size + 1; i++)
     {  // 2n+1 sigma points
 
-       // extract values for better readability
+        // extract values for better readability
         double p_x = predicted_sigma_points(0, i);
         double p_y = predicted_sigma_points(1, i);
         double v = predicted_sigma_points(2, i);
@@ -80,7 +81,7 @@ void RadarManager::PredictMeasurement(int n_z, VectorXd& z_pred, MatrixXd& S, Ma
     S = S + R;
 
     // print result
-    if (debug_)
+    if (use_debug_outputs_)
     {
         std::cout << "z_pred: " << std::endl << z_pred << std::endl;
         std::cout << "S: " << std::endl << S << std::endl;

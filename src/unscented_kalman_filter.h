@@ -51,13 +51,17 @@ class UnscentedKalmanFilter
     MatrixXd& GetPredictedSigmaPoints() { return Xsig_pred_; }
 
   private:
+    /// Shall make debug outputs
+    bool use_debug_outputs_;
+    /// if this is false, laser measurements will be ignored (except for init)
+    bool use_laser_;
+    /// if this is false, radar measurements will be ignored (except for init)
+    bool use_radar_;
+
     // Helper classes for sigma points and measurements
     SigmapointManager sigma_manager_;
     LaserManager laser_manager_;
     RadarManager radar_manager_;
-
-    /// Shall make debug outputs
-    bool debug_;
     /// State dimension
     int n_x_;
     /// Augmented state dimension
@@ -74,15 +78,10 @@ class UnscentedKalmanFilter
     ///  Weights of sigma points
     VectorXd weights_;
 
-    /// initially set to false, set to true in first call of ProcessMeasurement
-    bool is_initialized_;
-    /// if this is false, laser measurements will be ignored (except for init)
-    bool use_laser_;
-    /// if this is false, radar measurements will be ignored (except for init)
-    bool use_radar_;
-
     /// time when the state is true, in us
     long long time_us_;
+    /// initially set to false, set to true in first call of ProcessMeasurement
+    bool is_initialized_;
 
     /// Process noise standard deviation longitudinal acceleration in m/s^2
     double std_a_;
