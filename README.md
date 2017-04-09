@@ -5,11 +5,18 @@ Self-Driving Car Engineer Nanodegree Program
 
 ## Results
 
+## Result for sample-laser-radar-measurement-data-1.txt
+Required accuracy: [0.09, 0.09, 0.65, 0.65].
+![Visualization Data Set 2](results/ukf-visualization2.png)
+![RMSE Data Set 2](results/output2.png)
+
+sample-laser-radar-measurement-data-2.txt
+Required accuracy: [0.20, 0.20, 0.55, 0.55].
 ![Visualization Data Set 1](results/ukf-visualization1.png)
 ![RMSE Data Set 1](results/output1.png)
 
-![Visualization Data Set 2](results/ukf-visualization2.png)
-![RMSE Data Set 2](results/output2.png)
+Note that the first to values of the input data file have been manually set to a small floating point number as suggested by the lecture.
+"One way to catch for this is to observe when both px, py are zero and instead set them to some small floating value."
 
 ## How To
 Use the configure.bat to configure two project:
